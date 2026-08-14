@@ -133,7 +133,7 @@ internal class ElectrumRpcClient
 
             try
             {
-                if (e.Message == "internal error while executing RPC")
+                if (e.Message.EndsWith("internal error while executing RPC", StringComparison.OrdinalIgnoreCase))
                 {
                     if (e.Details is not null)
                     {
@@ -147,8 +147,14 @@ internal class ElectrumRpcClient
                     }
                 }
             }
+            catch (ElectrumRpcException)
+            {
+                this.log.Debug("$<EXCEPTION_ELECTRUM_DETAILED>");
+                throw;
+            }
             catch
             {
+                // All other exceptions we ignore as they come from deserialization attempt.
             }
 
             this.log.Debug("$<EXCEPTION_ELECTRUM>");
