@@ -345,7 +345,7 @@ internal class RestApiController : InternalControllerBase
                 this.log.Error($"Exception occurred while marking swap ID {swap.Id} as rejected: {ei}");
             }
 
-            string errorMessage = $"Creating new forward swap failed. {e.Message}";
+            string errorMessage = $"Creating new forward swap failed. {e.Message}. Please try again or use a different provider.";
 
             // Handle the special case: "Swap server error: no LN path for the payment could be found".
             if ((e is ElectrumRpcException rpcException) && rpcException.Message.Contains("no LN path", StringComparison.OrdinalIgnoreCase))
@@ -486,7 +486,10 @@ internal class RestApiController : InternalControllerBase
                 this.log.Error($"Exception occurred while marking swap ID {swap.Id} as rejected: {ei}");
             }
 
-            result = new($"Creating new reverse swap failed. {e.Message}");
+            string errorMessage = $"Creating new forward swap failed. {e.Message}. Please try again or use a different provider.";
+
+            result = new(errorMessage);
+
             this.log.Debug($"$<SWAP_REJECTED>='{result}'");
             return result;
         }
